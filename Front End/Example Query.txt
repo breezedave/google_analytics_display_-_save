@@ -1,0 +1,1 @@
+https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A83729847&dimensions=ga%3Ayear%2Cga%3Amonth%2Cga%3Aday%2Cga%3Ahour&metrics=ga%3Asessions&sort=ga%3Ayear%2Cga%3Amonth%2Cga%3Aday%2Cga%3Ahour&start-date=2014-06-03&end-date=2014-06-17&max-results=5000
