@@ -26,6 +26,7 @@ getData.isReady = function () {
     if (getData.progress == 3) {
         clearInterval(getData.looping);
         var json = JSON.stringify(getData.results);
+        alert(json.toString());
         dsdConn.post(json);
     }
     if (getData.progress == 5) {
@@ -80,7 +81,7 @@ dsdConn.post = function (json) {
         alert("This service will not work with your browser");
     }
 
-    xmlHTTP.open("POST", "ajax_test.asp", true);
+    xmlHTTP.open("POST", "api/values", true);
     xmlHTTP.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlHTTP.send(json);
 
@@ -96,7 +97,7 @@ dsdConn.get = function () {
     } else {
         alert("This service will not work with your browser");
     }
-    xmlHTTP.open("GET", "ajax_test.asp", true);
+    xmlHTTP.open("GET", "api/values", true);
     xmlHTTP.send();
     xmlHTTP.onreadystatechange = function () {
         if (xmlHTTP.readyState == 4 && xmlHTTP.status == 200) { alert("Worked"); getData.progress++ }
