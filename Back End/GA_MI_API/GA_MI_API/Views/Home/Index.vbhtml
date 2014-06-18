@@ -2,6 +2,7 @@
     <!-- The 2 Buttons for the user to interact with -->
     <button id="authorize-button" style="visibility: hidden">Authorize</button><br/>
     <button id="make-api-call-button" style="visibility: hidden">Get Sessions</button>
+    <div id="customerUpdate"></div>
 
     <!-- These JavaScript files will be created later on in the tutorial -->
     @Scripts.Render("~/scripts/json3.min.js")

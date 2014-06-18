@@ -3,6 +3,7 @@ getData.ready = false;
 getData.account = "";
 getData.profile = "";
 getData.progress = 0; // 0 = authenticating, 1 = getting need/want list, 2= getting data, 3=resting
+getData.displayMessage = "";
 getData.queryingGA = false;
 getData.loop = function () {
     getData.looping = setInterval(getData.isReady, 500);
@@ -15,29 +16,41 @@ getData.needListPass = function () {
         params.real_date = getData.needList[0].real_date.substr(0,10);
         params.metric = getData.needList[0].metric;
         getData.needList.splice(0, 1);
+        getData.displayMessage = getData.needList.length + " background tasks left to process";
+        getData.updateCustomer();
         getData.pullFromGoogle(params);
     } else {
-        alert("needlist empty");
+        getData.progress++;
+        getData.loop();
     }
+}
+
+getData.updateCustomer = function () {
+    var customerUpdate = document.getElementById("customerUpdate");
+    customerUpdate.innerHTML = getData.displayMessage;
 }
 
 getData.isReady = function () {
     if (getData.progress == 0) {
+        getData.displayMessage = "Ready";
         if (getData.account != "" && getData.profile != "") { getData.ready = true; getData.progress++}
     }
     if (getData.progress == 1) {
+        getData.displayMessage = "Getting list of required background tasks";
         dsdConn.get();
     }
-
     if (getData.progress == 2) {
         getData.needListPass();
     }
-
+    if (getData.progress == 3) {
+        getData.displayMessage = "All background tasks have been processed";
+        clearInterval(getData.looping);
+    }
     if (getData.progress == 5) {
         clearInterval(getData.looping);
-        alert('Grabbing data from DSD failed');
+        getData.displayMessage = "Background processing failed";
     }
-
+    getData.updateCustomer();
 }
 getData.pullFromGoogle = function (params) {
     var metricAdd = "";
@@ -75,9 +88,16 @@ function printResults(results) {
         if (results.rows && results.rows.length) {
             var records = [];
             for (var i = 0; i < results.rows.length; i++) {
-                var row = [];
+                var row = {};
                 for (var i2 = 0; i2 < results.rows[i].length; i2++) {
-                    row.push(results.rows[i][i2]);
+                    if (results.columnHeaders[i2].name == 'ga:year') { row.year = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:month') { row.month = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:day') { row.day = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:hour') { row.hour = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:pagepath') { row.pagepath = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:sessions') { row.sessions = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:users') { row.users = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:pageviews') { row.pageviews = results.rows[i][i2] };
                 }
                 records.push(row);
             }
@@ -117,12 +137,12 @@ dsdConn.post = function (json) {
     }
 
     xmlHTTP.open("POST", "api/values", true);
-    xmlHTTP.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlHTTP.setRequestHeader("Content-type", "application/json");
     xmlHTTP.send(json);
 
     xmlHTTP.onreadystatechange = function () {
         if (xmlHTTP.readyState == 4 && xmlHTTP.status == 200) { 
-            console.log(xmlHTTP.status);
+            console.log(xmlHTTP.response);
             getData.needListPass();
         }
         if (xmlHTTP.readyState == 4 && xmlHTTP.status != 200) { 

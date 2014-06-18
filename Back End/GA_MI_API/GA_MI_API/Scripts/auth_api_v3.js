@@ -51,6 +51,8 @@ function handleUnAuthorized() {
 
 
 function handleAuthClick(event) {
+    getData.displayMessage = "Authenticating access with Google";
+    getData.updateCustomer();
     gapi.auth.authorize({ client_id: clientId, scope: scopes, immediate: false }, handleAuthResult);
     return false;
 }
