@@ -9,16 +9,16 @@
             <table>
                 <tr>
                     <td>Start Date</td>
-                    <td><input id="startDate" type="text" /></td>
+                    <td><input id="startDate" type="text" onchange="dash.changedParam()"/></td>
                 </tr>
                 <tr>
                     <td>End Date</td>
-                    <td><input id="endDate" type="text" /></td>
+                    <td><input id="endDate" type="text" onchange="dash.changedParam()"/></td>
                 </tr>
                 <tr>
                     <td>End Date</td>
                     <td>
-                        <select id="metric">
+                        <select id="metric" onchange="dash.changedParam()">
                             <option>Sessions</option>
                             <option>Users</option>
                             <option>Page Views</option>

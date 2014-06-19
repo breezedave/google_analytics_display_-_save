@@ -33,11 +33,13 @@ getData.updateCustomer = function () {
 getData.isReady = function () {
     if (getData.progress == 0) {
         getData.displayMessage = "Ready";
-        if (getData.account != "" && getData.profile != "") { getData.ready = true; getData.progress++}
+        if (getData.account != "" && getData.profile != "") {
+            getData.ready = true;
+            getData.progress++;
+            dash.newQuery("chartHolder", "monthly");
+        }
     }
     if (getData.progress == 1) {
-        clearInterval(getData.looping); //Delete ME!
-        dash.buttonClick("chartHolder", "monthly"); //Delete ME!
         getData.displayMessage = "Getting list of required background tasks";
         dsdConn.get();
     }
@@ -134,24 +136,4 @@ dsdConn.post = function (json) {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 getData.loop();

@@ -2,7 +2,8 @@
 
 dash.startDate = "2014-03-31";
 dash.endDate = "2014-05-30";
-dash.metric = "ga:users";
+dash.metric = "ga:pageviews";
+dash.period = "monthly";
 var elemStartDate = document.getElementById('startDate');
 var elemEndDate = document.getElementById('endDate');
 var elemMetric = document.getElementById('metric');
@@ -10,12 +11,19 @@ elemStartDate.value = dash.startDate;
 elemEndDate.value = dash.endDate;
 var opts = elemMetric.options;
 for (var i = 0; i < opts.length; i++) {
-    if (opts[i].value.toLowerCase() == dash.metric.substr(3,100)) {
+    if (opts[i].value.toLowerCase().replace(" ","") == dash.metric.substr(3,100)) {
         elemMetric.selectedIndex = i;
         break;
     }
 }
 
+
+dash.changedParam = function () {
+    dash.startDate = elemStartDate.value;
+    dash.endDate = elemEndDate.value;
+    dash.metric = "ga:" + elemMetric.value.toLowerCase().replace(" ", "");
+    dash.newQuery("chartHolder", dash.period);
+}
 
 dash.loadResults = function (results) {
     if (!results.error) {
@@ -79,7 +87,7 @@ dash.createButtons = function (opts) {
     yearly.style.marginRight = "-1px";
     yearly.className = "button"
     yearly.innerHTML = "Yearly";
-    yearly.onclick = function () { dash.buttonClick(opts.boxInside, "yearly") }
+    yearly.onclick = function () { dash.newQuery(opts.boxInside, "yearly") }
     buttonHolder.appendChild(yearly);
 
     var monthly = document.createElement('div');
@@ -94,7 +102,7 @@ dash.createButtons = function (opts) {
     monthly.style.marginRight = "-1px";
     monthly.className = "button"
     monthly.innerHTML = "Monthly";
-    monthly.onclick = function () { dash.buttonClick(opts.boxInside, "monthly") }
+    monthly.onclick = function () { dash.newQuery(opts.boxInside, "monthly") }
     buttonHolder.appendChild(monthly);
 
 
@@ -110,7 +118,7 @@ dash.createButtons = function (opts) {
     daily.style.marginRight = "-1px";
     daily.className = "button"
     daily.innerHTML = "Daily";
-    daily.onclick = function () { dash.buttonClick(opts.boxInside, "daily") }
+    daily.onclick = function () { dash.newQuery(opts.boxInside, "daily") }
     buttonHolder.appendChild(daily);
 
 
@@ -126,7 +134,7 @@ dash.createButtons = function (opts) {
     hourly.style.marginRight = "-1px";
     hourly.className = "button"
     hourly.innerHTML = "Hourly";
-    hourly.onclick = function () { dash.buttonClick(opts.boxInside, "hourly") }
+    hourly.onclick = function () { dash.newQuery(opts.boxInside, "hourly") }
     buttonHolder.appendChild(hourly);
 
     return buttonHolder;
@@ -232,7 +240,7 @@ dash.createCol = function (opts) {
     return col;
 }
 
-dash.buttonClick = function (position, period) {
+dash.newQuery = function (position, period) {
     var query = {}
     query.ids = "ga:" + getData.profile;
     query["start-date"] = dash.startDate;
