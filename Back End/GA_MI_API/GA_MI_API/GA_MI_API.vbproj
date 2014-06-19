@@ -309,6 +309,7 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\api_v3.js" />
     <Content Include="Scripts\auth_api_v3.js" />
+    <Content Include="Scripts\dashboard.js" />
     <Content Include="Scripts\getData.js" />
     <Content Include="Scripts\json3.min.js" />
     <Content Include="Web.config" />

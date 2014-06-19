@@ -36,6 +36,8 @@ getData.isReady = function () {
         if (getData.account != "" && getData.profile != "") { getData.ready = true; getData.progress++}
     }
     if (getData.progress == 1) {
+        clearInterval(getData.looping); //Delete ME!
+        dash.buttonClick("chartHolder", "monthly"); //Delete ME!
         getData.displayMessage = "Getting list of required background tasks";
         dsdConn.get();
     }
@@ -64,27 +66,8 @@ getData.pullFromGoogle = function (params) {
     }).execute(printResults);
 }
 
-/*
-function queryCoreReportingApi(profileId) {
-    console.log('Querying Core Reporting API.');
-
-    // Use the Analytics Service Object to query the Core Reporting API
-    gapi.client.analytics.data.ga.get({
-        'ids': 'ga:' + profileId
-        ,'start-date': '2014-03-03'
-        ,'end-date': '2014-04-03'
-        ,'dimensions': 'ga:year,ga:month,ga:day,ga:hour,ga:pagepath'
-        ,'metrics': 'ga:pageviews'
-    }).execute(printResults);
-}
-*/
-
-var a;
 function printResults(results) {
-    if (results.error) {
-        a = results.error;
-        alert(results.error);
-    } else {
+    if (!results.error) {
         if (results.rows && results.rows.length) {
             var records = [];
             for (var i = 0; i < results.rows.length; i++) {
@@ -102,7 +85,7 @@ function printResults(results) {
                 records.push(row);
             }
         } else {
-            console.log('No results found');
+            //console.log('No results found');
         }
     }
     getData.results = records;
@@ -142,11 +125,11 @@ dsdConn.post = function (json) {
 
     xmlHTTP.onreadystatechange = function () {
         if (xmlHTTP.readyState == 4 && xmlHTTP.status == 200) { 
-            console.log(xmlHTTP.response);
+            //console.log(xmlHTTP.response);
             getData.needListPass();
         }
         if (xmlHTTP.readyState == 4 && xmlHTTP.status != 200) { 
-            console.log(xmlHTTP.status + " " + xmlHTTP.statusText);
+            //console.log(xmlHTTP.status + " " + xmlHTTP.statusText);
             getData.needListPass();
         }
     }
