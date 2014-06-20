@@ -18,10 +18,9 @@ function handleAccounts(results) {
         if (results && results.items && results.items.length) {
 
             for(i=0;i<results.items.length;i++) {
-                if (results.items[i].name == secrets.companyName) {
+                if (results.items[i].name == 'DVLA') {
                     var firstAccountId = results.items[i].id;
                     getData.account = firstAccountId;
-
                 }
             }
             // Query for Web Properties
@@ -51,7 +50,7 @@ function handleProfiles(results) {
         if (results && results.items && results.items.length) {
 
             for (var i = 0; i < results.items.length; i++) {
-                if (results.items[i].webPropertyId == secrets.webPropertyId) {
+                if (results.items[i].webPropertyId == 'UA-44719962-6') {
                     // Get the first View (Profile) ID
                     var firstProfileId = results.items[i].id;
                     getData.profile = firstProfileId;

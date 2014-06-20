@@ -118,6 +118,18 @@
     cursor: pointer;
     font-weight:700;
 }
+#tableHolder
+{
+    position:absolute;
+    top:600px;
+    width:90%;
+    left:5%;
+    min-height:100px;
+    background-color:#FF0000;
+
+}
+
+
 #customerUpdate
 {
     position:absolute;

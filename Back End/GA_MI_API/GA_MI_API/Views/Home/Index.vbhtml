@@ -36,10 +36,10 @@
         </div>
     
         <div id="chartHolder"></div>
+        <div id="tableHolder"></div>
 
     </div>
     <!-- These JavaScript files will be created later on in the tutorial -->
-    @Scripts.Render("~/scripts/secrets.js")
     @Scripts.Render("~/scripts/json3.min.js")
     @Scripts.Render("~/scripts/getData.js")
     @Scripts.Render("~/scripts/api_v3.js")

@@ -1,5 +1,5 @@
-﻿var clientId = secrets.client_id;
-var apiKey = secrets.apiKey;
+﻿var clientId = '322876015263-24nc1splan07oqm0gni9nu8rnohf60go.apps.googleusercontent.com';
+var apiKey = 'AIzaSyC_8dWztKhJ-f7ny-m7jOeBXZ0gfqxhMqk';
 var scopes = 'https://www.googleapis.com/auth/analytics.readonly';
 var authTried = false;
 
