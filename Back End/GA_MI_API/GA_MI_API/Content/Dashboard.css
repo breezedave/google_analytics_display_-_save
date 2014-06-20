@@ -128,16 +128,37 @@
 #tableHolder table
 {
     position:absolute;
-    top:30px;
-    width:100%;
+    top:35px;
+    width:90%;
+    left:5%;
 }
 #tableHolder th
 {
     text-align:center;
+    border-width:2px 1px;
+    border-style:solid;
+    border-color:#CBCBCB;
+    background-color:#5c60a3;
+    color:white;
+}
+#tableHolder th:first-child
+{
+    border-left-width:2px;
+}
+#tableHolder th:last-child
+{
+    border-right-width:2px;
 }
 #tableHolder td
 {
     font-size:10px;
+    border-collapse:collapse;
+    border-width:1px;
+    border-style:solid;
+    border-color:#CBCBCB;
+    padding:0;
+    padding-left:10px;
+    text-align:left;
 }
 
 

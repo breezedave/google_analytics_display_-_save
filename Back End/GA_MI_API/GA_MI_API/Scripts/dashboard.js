@@ -1,7 +1,9 @@
 ﻿var dash = {};
 
 dash.startDate = "2014-03-31";
-dash.endDate = "2014-05-30";
+
+var yesterday = new Date(new Date()-86400000);
+dash.endDate = yesterday.getFullYear() + "-" + ("00" + (yesterday.getMonth() + 1)).substr(String("00" + (yesterday.getMonth() + 1)).length - 2, 2) + "-" + ("00" + (yesterday.getDate() + 1)).substr(String("00" + (yesterday.getDate() + 1)).length - 2, 2);
 dash.metric = "ga:pageviews";
 dash.period = "monthly";
 var elemStartDate = document.getElementById('startDate');
@@ -124,7 +126,9 @@ dash.dateValidation = function (datum) {
     if (parseInt(datum.substr(5, 2)) < 1 || parseInt(datum.substr(5, 2)) > 12) { err = true };
     if (parseInt(datum.substr(8, 2)) < 1 || parseInt(datum.substr(8, 2)) > 31) { err = true };
     var regex = "/," + parseInt(datum.substr(5, 2)) + ",/";
-    if (eval(regex).test(',9,4,5,11,') && parseInt(datum.substr(8, 2)) > 30) {err = true };
+    if (eval(regex).test(',9,4,5,11,') && parseInt(datum.substr(8, 2)) > 30) { err = true };
+    if (parseInt(datum.substr(5, 2)) == 2 && parseInt(datum.substr(8, 2)) > 29) { err = true };
+    if (parseInt(datum.substr(0,4))%4 !=0 && parseInt(datum.substr(5, 2)) == 2 && parseInt(datum.substr(8, 2)) > 28) { err = true };
     return !err;
 }
 
@@ -359,6 +363,7 @@ dash.tableQuery = function (position, period) {
     if (period == "daily") { query.dimensions = "ga:year,ga:month,ga:day" }
     if (period == "monthly") { query.dimensions = "ga:year,ga:month" }
     if (period == "yearly") { query.dimensions = "ga:year" }
+    query.sort = query.dimensions + ",-" + query.metrics;
     if (query.metrics == "ga:pageviews") { query.dimensions += ",ga:pagepath" }
     dash.tablePeriod = period;
     dash.pullFromGoogleTable(position, query);
@@ -543,6 +548,7 @@ dash.createTable = function (data, params) {
     box.style.marginLeft = "auto";
     box.style.marginRight = "auto";
     box.style.overflowY = "scroll";
+    box.style.textAlign = "center";
     var buttons = dash.createButtons(opts);
     box.appendChild(buttons);
 
@@ -559,28 +565,30 @@ dash.createTable = function (data, params) {
 dash.createTableHTML = function (data) {
     var tisch = document.createElement('table');
     var cols = [];
-    for (col in data[0]) {
-        cols.push(col);
-    }
-    var row = document.createElement('tr')
-    for (i = 0; i < cols.length; i++) {
-        var col = document.createElement('th')
-        col.innerHTML = cols[i];
-        row.appendChild(col);
-    }
-    tisch.appendChild(row);
-    for (i = 0; i < data.length; i++) {
+    if (data) {
+        for (col in data[0]) {
+            cols.push(col);
+        }
         var row = document.createElement('tr')
-        for (i2 = 0; i2 < cols.length; i2++) {
-            var col = document.createElement('td');
-            if (cols[i2] == "date") {
-                data[i].date = dash.cleanDate(data[i].date,dash.tablePeriod);
-            }
-            if (data[i][cols[i2]].length > 60) { data[i][cols[i2]] = data[i][cols[i2]].substr(0, 57) + "..."; }
-            col.innerHTML = data[i][cols[i2]];
+        for (i = 0; i < cols.length; i++) {
+            var col = document.createElement('th')
+            col.innerHTML = cols[i].charAt(0).toUpperCase() + cols[i].substr(1).toLowerCase();
             row.appendChild(col);
         }
         tisch.appendChild(row);
+        for (i = 0; i < data.length; i++) {
+            var row = document.createElement('tr')
+            for (i2 = 0; i2 < cols.length; i2++) {
+                var col = document.createElement('td');
+                if (cols[i2] == "date") {
+                    data[i].date = dash.cleanDate(data[i].date, dash.tablePeriod);
+                }
+                if (data[i][cols[i2]].length > 60) { data[i][cols[i2]] = data[i][cols[i2]].substr(0, 57) + "..."; }
+                col.innerHTML = data[i][cols[i2]];
+                row.appendChild(col);
+            }
+            tisch.appendChild(row);
+        }
     }
     return tisch;
 }
