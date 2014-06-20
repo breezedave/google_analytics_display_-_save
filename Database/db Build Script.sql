@@ -1,4 +1,17 @@
 
+CREATE DATABASE [GA_MI]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'GA_MI', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL11.DSDSERVER\MSSQL\DATA\GA_MI.mdf' , SIZE = 12288KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'GA_MI_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL11.DSDSERVER\MSSQL\DATA\GA_MI_log.ldf' , SIZE = 22144KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+GO
+
+ALTER DATABASE [GA_MI] SET COMPATIBILITY_LEVEL = 90
+GO
+
+USE GA_MI
+
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'getNeeded') DROP PROCEDURE getNeeded
 IF EXISTS (select * from sys.objects where type = 'U' and name ='fact_data') drop table fact_data
 IF EXISTS (select * from sys.objects where type = 'U' and name ='dim_dimensions') drop table dim_dimensions
@@ -76,7 +89,8 @@ end
 
 GO
 
-Create procedure getNeeded
+USE GA_MI
+Create procedure [dbo].[getNeeded]
 as 
 Select dim_dimensions.dimension_id
 , dim_dimensions.ga_year
@@ -87,10 +101,14 @@ Select dim_dimensions.dimension_id
 , dim_metrics.metric
 From
 (
-	Select dims.dimension_id
+	Select min(dims.dimension_id) as dimension_id
 	From
 	(
 		Select dimension_id
+		, ga_year
+		, ga_month
+		, ga_day
+		, metric_id
 		From dim_dimensions
 		Where real_date < dateadd(HOUR,-2,getdate())
 	) dims
@@ -101,7 +119,57 @@ From
 	) facts
 	on dims.dimension_id = facts.dimension_id
 	where facts.dimension_id is null
+	group by ga_year
+	, ga_month
+	, ga_day
+	, dims.metric_id
 ) dim_ids
 Join dim_dimensions on dim_dimensions.dimension_id = dim_ids.dimension_id
 Join dim_metrics on dim_dimensions.metric_id = dim_metrics.metric_id
+order by dim_dimensions.dimension_id, dim_metrics.metric
 
+
+GO
+Create Proc [dbo].[insertPagePath](
+	  @year integer
+	, @month integer
+	, @day integer
+	, @hour integer
+	, @pagepath varchar(1000)
+	, @metric varchar(1000)
+	, @value integer
+) as
+
+declare @dimension_id integer
+declare @metric_id integer
+declare @pageview_id integer
+
+select @pageview_id=pageview_id from dim_pageviews where pageview = @pagepath
+
+if @pageview_id is null
+begin
+	insert into dim_pageviews (pageview) values (@pagepath)
+	select @pageview_id=pageview_id from dim_pageviews where pageview = @pagepath
+end
+
+select @dimension_id=dim.dimension_id 
+, @metric_id=dim.metric_id
+from dim_dimensions dim
+Join dim_metrics met
+on dim.metric_id = met.metric_id
+where dim.ga_year = @year
+and dim.ga_month = @month
+and dim.ga_day = @day
+and dim.ga_hour = @hour
+and met.metric = @metric
+
+delete from fact_data where dimension_id = @dimension_id and pageview_id = @pageview_id
+insert into fact_data (dimension_id,metric_id,pageview_id,value)
+values (
+	  @dimension_id
+	, @metric_id
+	, @pageview_id
+	, @value
+)
+
+GO
