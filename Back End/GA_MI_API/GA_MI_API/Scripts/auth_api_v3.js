@@ -1,5 +1,5 @@
-﻿var clientId = '322876015263-24nc1splan07oqm0gni9nu8rnohf60go.apps.googleusercontent.com';
-var apiKey = 'AIzaSyC_8dWztKhJ-f7ny-m7jOeBXZ0gfqxhMqk';
+﻿var clientId = secrets.client_id;
+var apiKey = secrets.apiKey;
 var scopes = 'https://www.googleapis.com/auth/analytics.readonly';
 var authTried = false;
 
@@ -34,7 +34,7 @@ function handleAuthorized() {
     var makeApiCallButton = document.getElementById('make-api-call-button');
 
     //makeApiCallButton.style.visibility = '';
-    authorizeButton.style.visibility = 'hidden';
+    authorizeButton.style.display="none"
     makeApiCall()
 }
 
@@ -44,7 +44,7 @@ function handleUnAuthorized() {
     var authorizeButton = document.getElementById('authorize-button');
     var makeApiCallButton = document.getElementById('make-api-call-button');
 
-    makeApiCallButton.style.visibility = 'hidden';
+    makeApiCallButton.style.display = 'none';
     authorizeButton.style.visibility = '';
     authorizeButton.onclick = handleAuthClick;
 }

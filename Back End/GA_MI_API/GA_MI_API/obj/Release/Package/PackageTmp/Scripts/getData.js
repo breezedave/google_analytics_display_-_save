@@ -16,7 +16,7 @@ getData.needListPass = function () {
         params.real_date = getData.needList[0].real_date.substr(0,10);
         params.metric = getData.needList[0].metric;
         getData.needList.splice(0, 1);
-        getData.displayMessage = getData.needList.length + " background tasks left to process";
+        getData.displayMessage = "<img class='loaderGif' src='../images/ajax-loader.gif'/>" + getData.needList.length + " background tasks left to process";
         getData.updateCustomer();
         getData.pullFromGoogle(params);
     } else {
@@ -36,7 +36,7 @@ getData.isReady = function () {
         if (getData.account != "" && getData.profile != "") {
             getData.ready = true;
             getData.progress++;
-            document.getElementById('controls').style.display = "block";
+            document.getElementById('myControls').style.display = "";
             dash.newQuery("chartHolder", "monthly");
         }
     }

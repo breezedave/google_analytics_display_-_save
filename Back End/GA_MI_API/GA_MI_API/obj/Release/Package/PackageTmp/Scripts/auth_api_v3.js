@@ -34,7 +34,7 @@ function handleAuthorized() {
     var makeApiCallButton = document.getElementById('make-api-call-button');
 
     //makeApiCallButton.style.visibility = '';
-    authorizeButton.style.visibility = 'hidden';
+    authorizeButton.style.display="none"
     makeApiCall()
 }
 
@@ -44,7 +44,7 @@ function handleUnAuthorized() {
     var authorizeButton = document.getElementById('authorize-button');
     var makeApiCallButton = document.getElementById('make-api-call-button');
 
-    makeApiCallButton.style.visibility = 'hidden';
+    makeApiCallButton.style.display = 'none';
     authorizeButton.style.visibility = '';
     authorizeButton.onclick = handleAuthClick;
 }

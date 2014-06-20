@@ -11,7 +11,7 @@ elemStartDate.value = dash.startDate;
 elemEndDate.value = dash.endDate;
 var opts = elemMetric.options;
 for (var i = 0; i < opts.length; i++) {
-    if (opts[i].value.toLowerCase().replace(" ","") == dash.metric.substr(3,100)) {
+    if (opts[i].innerHTML.toLowerCase().replace(" ", "") == dash.metric.substr(3, 100)) {
         elemMetric.selectedIndex = i;
         break;
     }
@@ -21,8 +21,8 @@ for (var i = 0; i < opts.length; i++) {
 dash.changedParam = function () {
     dash.startDate = elemStartDate.value;
     dash.endDate = elemEndDate.value;
-    dash.metric = "ga:" + elemMetric.value.toLowerCase().replace(" ", "");
-    dash.newQuery("chartHolder", dash.period);
+    dash.metric = "ga:" + String(elemMetric.childNodes[(elemMetric.selectedIndex*2)+1].innerHTML).toLowerCase().replace(" ", "");
+	dash.newQuery("chartHolder", dash.period);
 }
 
 dash.loadResults = function (results) {
@@ -48,7 +48,7 @@ dash.loadResults = function (results) {
         }
     }
     var params = { boxInside: dash.boxInside };
-    dash.createColChart(records,params);
+    dash.createColChart(records, params);
 }
 
 
@@ -83,7 +83,6 @@ dash.createButtons = function (opts) {
     yearly.style.borderStyle = "Solid";
     yearly.style.borderColor = opts.buttonBorderColor;
     yearly.style.textAlign = "center";
-    yearly.style.display = "inline-block";
     yearly.style.marginRight = "-1px";
     yearly.className = "button"
     yearly.innerHTML = "Yearly";
@@ -98,7 +97,6 @@ dash.createButtons = function (opts) {
     monthly.style.borderStyle = "Solid";
     monthly.style.borderColor = opts.buttonBorderColor;
     monthly.style.textAlign = "center";
-    monthly.style.display = "inline-block";
     monthly.style.marginRight = "-1px";
     monthly.className = "button"
     monthly.innerHTML = "Monthly";
@@ -114,7 +112,6 @@ dash.createButtons = function (opts) {
     daily.style.borderStyle = "Solid";
     daily.style.borderColor = opts.buttonBorderColor;
     daily.style.textAlign = "center";
-    daily.style.display = "inline-block";
     daily.style.marginRight = "-1px";
     daily.className = "button"
     daily.innerHTML = "Daily";
@@ -130,7 +127,6 @@ dash.createButtons = function (opts) {
     hourly.style.borderStyle = "Solid";
     hourly.style.borderColor = opts.buttonBorderColor;
     hourly.style.textAlign = "center";
-    hourly.style.display = "inline-block";
     hourly.style.marginRight = "-1px";
     hourly.className = "button"
     hourly.innerHTML = "Hourly";
@@ -158,7 +154,7 @@ dash.createTitle = function (opts) {
     title.style.width = parseFloat(opts.boxWidth) - opts.axisPadding + "px";
     title.style.top = "0px";
     title.style.left = opts.axisPadding + "px";
-    title.style.height = opts.axisPadding/4*3 + "px";
+    title.style.height = opts.axisPadding / 4 * 3 + "px";
     title.style.paddingTop = opts.axisPadding / 4 + "px";
     title.style.position = "absolute";
     title.style.textAlign = "left";
@@ -201,10 +197,10 @@ dash.createShowVal = function () {
 
 dash.createCol = function (opts) {
     var col = document.createElement('div');
-    col.style.width = opts.colWidth;
+    if (parseFloat(opts.colWidth) < 0) { col.style.width = "0px" } else { col.style.width = opts.colWidth };
     col.style.maxWidth = col.style.width;
     col.style.left = parseFloat(opts.colLeft) + opts.axisPadding + "px";
-    col.style.height = opts.colHeight;
+    if (parseFloat(opts.colHeight) < 0) { col.style.height = "0px" } else { col.style.height = opts.colHeight };
     col.style.maxHeight = col.style.height;
     col.style.top = (parseFloat(opts.boxHeight) - opts.axisPadding * 2) - parseFloat(opts.colHeight) + opts.axisPadding + "px";
     col.style.backgroundColor = opts.colBackgroundColor;
@@ -217,7 +213,7 @@ dash.createCol = function (opts) {
         col.style.borderWidth = "0px";
     };
     col.alt = dash.cleanDate(opts.colDate, dash.period) + " - " + opts.colVal;
-    col.onclick = function () { document.getElementById('showVal').innerHTML = this.alt };
+    col.onmouseover = function () { document.getElementById('showVal').innerHTML = this.alt };
     col.className = "col";
 
     var value = document.createElement('div');
@@ -240,7 +236,7 @@ dash.createCol = function (opts) {
     colLabel.style.backgroundColor = "transparent";
     colLabel.innerHTML = opts.colLabel;
     if (parseFloat(col.style.width) > 1) { col.appendChild(colLabel) };
-    
+
     return col;
 }
 
@@ -264,40 +260,41 @@ dash.pullFromGoogle = function (position, query) {
 }
 
 dash.getDataDetail = function (data) {
-    var detail = {};
-    detail.max = (parseInt(data[0].sessions) || parseInt(data[0].users) || parseInt(data[0].pageviews)) || 0;
-    detail.tot = 0;
-    detail.len = data.length;
-    detail.yearly = false;
-    detail.monthly = false;
-    detail.daily = false;
-    detail.minDate = new Date(data[0].year||0, data[0].month-1||0, data[0].day||1, data[0].hour||0, 0, 0, 0);
-    detail.maxDate = detail.minDate;
-        
-    if(data[0].sessions) { detail.metric = "sessions"};
-    if(data[0].users) { detail.metric = "users"};
-    if (data[0].pageviews) { detail.metric = "pageviews" };
+	var detail = {};
 
-    for (var i = 0; i < data.length; i++) {
-        data[i].val = (parseInt(data[i].sessions) || parseInt(data[i].users) || parseInt(data[i].pageviews))||0;
-        var datum = new Date(data[i].year || 0, data[i].month - 1 || 0, data[i].day || 1, data[i].hour || 0, 0, 0, 0);
-        if (data[i].val > detail.max) { detail.max = data[i].val };
-        if (datum < detail.minDate) { detail.minDate = datum };
-        if (datum > detail.maxDate) { detail.maxDate = datum };
-        detail.tot += data[i].val;
-    }
-    detail.avg = parseFloat(detail.tot) / detail.len;
-    detail.chartMax = parseInt(detail.max / Math.pow(10, String(detail.max).length - 1) + 1) * Math.pow(10, String(detail.max).length - 1);
-    detail.period = dash.period;
-    return detail;
+	detail.max = (parseInt(data[0].sessions) || parseInt(data[0].users) || parseInt(data[0].pageviews) || 0);
+	detail.tot = 0;
+	detail.len = data.length;
+	detail.yearly = false;
+	detail.monthly = false;
+	detail.daily = false;
+	detail.minDate = new Date(data[0].year || 0, data[0].month - 1 || 0, data[0].day || 1, data[0].hour || 0, 0, 0, 0);
+	detail.maxDate = detail.minDate;
+
+	if (data[0].sessions) { detail.metric = "sessions" };
+	if (data[0].users) { detail.metric = "users" };
+	if (data[0].pageviews) { detail.metric = "pageviews" };
+
+	for (var i = 0; i < data.length; i++) {
+		data[i].val = (parseInt(data[i].sessions) || parseInt(data[i].users) || parseInt(data[i].pageviews)) || 0;
+		var datum = new Date(data[i].year || 0, data[i].month - 1 || 0, data[i].day || 1, data[i].hour || 0, 0, 0, 0);
+		if (data[i].val > detail.max) { detail.max = data[i].val };
+		if (datum < detail.minDate) { detail.minDate = datum };
+		if (datum > detail.maxDate) { detail.maxDate = datum };
+		detail.tot += data[i].val;
+	}
+	detail.avg = parseFloat(detail.tot) / detail.len;
+	detail.chartMax = parseInt(detail.max / Math.pow(10, String(detail.max).length - 1) + 1) * Math.pow(10, String(detail.max).length - 1);
+	detail.period = dash.period;
+	return detail;
 }
 
 dash.createColChart = function (data, params) {
     var detail = dash.getDataDetail(data);
     var opts = {
-        boxHeight : "300px"
-        , boxWidth : "700px"
-        , boxBorderWidth : "2px"
+        boxHeight: "400px"
+        , boxWidth: "800px"
+        , boxBorderWidth: "2px"
         , boxBorderColor: "#BABABA"
         , boxBorderStyle: "Solid"
         , boxBackgroundColor: "#CBDEDE"
@@ -307,11 +304,11 @@ dash.createColChart = function (data, params) {
         , axisBorderStyle: "Solid"
         , axisBorderColor: "#888888"
         , axisPadding: 40
-        , colHeight : "200px"
-        , colWidth : "20px"
-        , colBorderWidth : "1px"
+        , colHeight: "200px"
+        , colWidth: "20px"
+        , colBorderWidth: "1px"
         , colBorderColor: "#333333"
-        , colBorderStyle: "Dotted"
+        , colBorderStyle: "Solid"
         , colBackgroundColor: "#BC3412"
         , colLeft: "0px"
         , buttonWidth: "60px"
@@ -322,59 +319,60 @@ dash.createColChart = function (data, params) {
 
     for (opt in opts) {
         for (param in params) {
-            if (param == opt) { opts[opt] = params[param]}
+            if (param == opt) { opts[opt] = params[param] }
         }
-        
+
     }
+	
+	opts.chartTitle = (detail.metric + " volumes: " + dash.cleanDate(detail.minDate, detail.period) + " - " + dash.cleanDate(detail.maxDate, detail.period)).replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+	opts.xAxisLabel = (detail.period + " " + detail.metric + " volumes").replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
 
-    opts.chartTitle = (detail.metric + " volumes: " + dash.cleanDate(detail.minDate, detail.period) + " - " + dash.cleanDate(detail.maxDate, detail.period)).replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
-    opts.xAxisLabel = (detail.period + " " + detail.metric + " volumes").replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+	var box = dash.createBox(opts);
+	var yAxis = dash.createYAxis(opts);
+	var xAxis = dash.createXAxis(opts);
+	var title = dash.createTitle(opts);
+	var buttons = dash.createButtons(opts);
+	var showVal = dash.createShowVal();
 
-    var box = dash.createBox(opts);
-    var yAxis = dash.createYAxis(opts);
-    var xAxis = dash.createXAxis(opts);
-    var title = dash.createTitle(opts);
-    var buttons = dash.createButtons(opts);
-    var showVal = dash.createShowVal();
+	box.appendChild(yAxis);
+	box.appendChild(xAxis);
+	box.appendChild(title);
+	box.appendChild(buttons);
+	box.appendChild(showVal);
 
-    box.appendChild(yAxis);
-    box.appendChild(xAxis);
-    box.appendChild(title);
-    box.appendChild(buttons);
-    box.appendChild(showVal);
+	for (var i = 0; i < data.length; i++) {
+		opts.colHeight = (data[i].val / detail.chartMax * parseFloat(yAxis.style.height)) - (parseFloat(opts.colBorderWidth) * 2) + "px";
+		opts.colWidth = ((parseFloat(opts.boxWidth) - opts.axisPadding * 2) / data.length) - (parseFloat(opts.colBorderWidth) * 2) + "px";
+		opts.colLeft = ((parseFloat(opts.boxWidth) - opts.axisPadding * 2) / data.length) * i + "px";
+		opts.colVal = data[i].val;
+		opts.colDate = new Date(data[i].year || 0, data[i].month - 1 || 0, data[i].day || 1, data[i].hour || 0, 0, 0, 0)
+		if (detail.period == "hourly") { opts.colLabel = data[i].hour };
+		if (detail.period == "daily") { opts.colLabel = data[i].day };
+		if (detail.period == "monthly") { opts.colLabel = data[i].month };
+		if (detail.period == "yearly") { opts.colLabel = data[i].year };
+		var col = dash.createCol(opts);
+		box.appendChild(col);
+	}
 
-    for (var i = 0; i < data.length; i++) {
-        opts.colHeight = (data[i].val / detail.chartMax * parseFloat(yAxis.style.height)) - (parseFloat(opts.colBorderWidth)*2) + "px";
-        opts.colWidth = ((parseFloat(opts.boxWidth) - opts.axisPadding * 2) / data.length) - (parseFloat(opts.colBorderWidth) * 2) + "px";
-        opts.colLeft = ((parseFloat(opts.boxWidth) - opts.axisPadding * 2) / data.length) * i + "px";
-        opts.colVal = data[i].val;
-        opts.colDate = new Date(data[i].year || 0, data[i].month - 1 || 0, data[i].day || 1, data[i].hour || 0, 0, 0, 0)
-        if (detail.period == "hourly") { opts.colLabel = data[i].hour };
-        if (detail.period == "daily") { opts.colLabel = data[i].day };
-        if (detail.period == "monthly") { opts.colLabel = data[i].month };
-        if (detail.period == "yearly") { opts.colLabel = data[i].year };
-        var col = dash.createCol(opts);
-        box.appendChild(col);
-    }
+	var placement = document.getElementById(opts.boxInside) || document.getElementsByTagName(opts.boxInside)[0];
+	placement.innerHTML = "";
+	placement.appendChild(box);
 
-    var placement = document.getElementById(opts.boxInside) || document.getElementsByTagName(opts.boxInside)[0];
-    placement.innerHTML = "";
-    placement.appendChild(box);
 }
 
-dash.cleanDate = function (datum,period) {
+dash.cleanDate = function (datum, period) {
     var d = datum.getDate();
     var y = datum.getFullYear();
 
     if (datum.getHours() < 12) {
         var longH = "00" + datum.getHours();
-        var h = longH.substr(String(longH.length)-2,2) + "am";
+        var h = longH.substr(String(longH.length) - 2, 2) + "am";
     } else {
-        var longH = "00" + (datum.getHours() -12);
+        var longH = "00" + (datum.getHours() - 12);
         var h = longH.substr(String(longH.length) - 2, 2) + "pm";
     }
 
-    switch(datum.getMonth()) {
+    switch (datum.getMonth()) {
         case 0: var m = "Jan"; break;
         case 1: var m = "Feb"; break;
         case 2: var m = "Mar"; break;
