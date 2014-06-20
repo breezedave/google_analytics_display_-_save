@@ -1,4 +1,3 @@
-
 CREATE DATABASE [GA_MI]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -13,6 +12,8 @@ GO
 USE GA_MI
 
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'getNeeded') DROP PROCEDURE getNeeded
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'insertValues') DROP PROCEDURE insertValues
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'insertPagePath') DROP PROCEDURE insertPagePath
 IF EXISTS (select * from sys.objects where type = 'U' and name ='fact_data') drop table fact_data
 IF EXISTS (select * from sys.objects where type = 'U' and name ='dim_dimensions') drop table dim_dimensions
 IF EXISTS (select * from sys.objects where type = 'U' and name ='dim_metrics') drop table dim_metrics
@@ -58,12 +59,12 @@ Constraint pk_id primary key (id)
 , Constraint fk_pageview_id foreign key (pageview_id) references dim_pageviews(pageview_id)
 )
 
-insert into dim_metrics (metric_tidy, metric) values ('Sessions','ga%3Asessions')
-insert into dim_metrics (metric_tidy, metric) values ('Users','ga%3Ausers')
-insert into dim_metrics (metric_tidy, metric) values ('Page Views','ga%3Apageviews')
+insert into dim_metrics (metric_tidy, metric) values ('Sessions','ga:sessions')
+insert into dim_metrics (metric_tidy, metric) values ('Users','ga:users')
+insert into dim_metrics (metric_tidy, metric) values ('Page Views','ga:pageviews')
 
 
-declare @sDate datetime = {ts '2014-03-31 00:00:00'}
+declare @sDate datetime = {ts '2014-03-31 08:00:00'}
 declare @eDate datetime = {ts '2020-01-01 00:00:00'}
 declare @metric_count integer = (Select count(*) from dim_metrics)
 while @sDate < @eDate
@@ -89,8 +90,7 @@ end
 
 GO
 
-USE GA_MI
-Create procedure [dbo].[getNeeded]
+Create procedure getNeeded
 as 
 Select dim_dimensions.dimension_id
 , dim_dimensions.ga_year
@@ -128,9 +128,42 @@ Join dim_dimensions on dim_dimensions.dimension_id = dim_ids.dimension_id
 Join dim_metrics on dim_dimensions.metric_id = dim_metrics.metric_id
 order by dim_dimensions.dimension_id, dim_metrics.metric
 
+GO
+
+Create Proc insertValues(
+	  @year integer
+	, @month integer
+	, @day integer
+	, @hour integer
+	, @metric varchar(1000)
+	, @value integer
+) as
+
+declare @dimension_id integer
+declare @metric_id integer
+
+select @dimension_id=dim.dimension_id 
+, @metric_id=dim.metric_id
+from dim_dimensions dim
+Join dim_metrics met
+on dim.metric_id = met.metric_id
+where dim.ga_year = @year
+and dim.ga_month = @month
+and dim.ga_day = @day
+and dim.ga_hour = @hour
+and met.metric = @metric
+
+delete from fact_data where dimension_id = @dimension_id
+insert into fact_data (dimension_id,metric_id,value)
+values (
+	  @dimension_id
+	, @metric_id
+	, @value
+)
 
 GO
-Create Proc [dbo].[insertPagePath](
+
+Create Proc insertPagePath(
 	  @year integer
 	, @month integer
 	, @day integer
@@ -171,5 +204,3 @@ values (
 	, @pageview_id
 	, @value
 )
-
-GO
