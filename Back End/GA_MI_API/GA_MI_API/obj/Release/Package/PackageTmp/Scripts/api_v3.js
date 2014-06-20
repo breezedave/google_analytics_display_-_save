@@ -18,16 +18,11 @@ function handleAccounts(results) {
         if (results && results.items && results.items.length) {
 
             for(i=0;i<results.items.length;i++) {
-                if (results.items[i].name == "DVLA") {
-                    // Get the DVLA Google Analytics account
+                if (results.items[i].name == 'DVLA') {
                     var firstAccountId = results.items[i].id;
                     getData.account = firstAccountId;
-
                 }
             }
-
-
-
             // Query for Web Properties
             queryProfiles(firstAccountId);
 

@@ -42,7 +42,6 @@
 #reportBody
 {
     width:100%;
-    min-height:600px;
     background-color:#FAFAFA;
     position:relative;
 }
@@ -81,6 +80,10 @@
     border-style:solid;
     border-color:#CBCBCB;
 }
+.guide
+{
+    color:#888888;
+}
 #chartHolder
 {
     position:absolute;
@@ -114,9 +117,54 @@
     cursor: pointer;
     font-weight:700;
 }
-#customerUpdate
+#tableHolder
 {
     position:absolute;
+    top:450px;
+    width:80%;
+    left:10%;
+    text-align:center;
+}
+#tableHolder table
+{
+    position:absolute;
+    top:35px;
+    width:90%;
+    left:5%;
+}
+#tableHolder th
+{
+    text-align:center;
+    border-width:2px 1px;
+    border-style:solid;
+    border-color:#CBCBCB;
+    background-color:#5c60a3;
+    color:white;
+}
+#tableHolder th:first-child
+{
+    border-left-width:2px;
+}
+#tableHolder th:last-child
+{
+    border-right-width:2px;
+}
+#tableHolder td
+{
+    font-size:10px;
+    border-collapse:collapse;
+    border-width:1px;
+    border-style:solid;
+    border-color:#CBCBCB;
+    padding:0;
+    padding-left:10px;
+    text-align:left;
+}
+
+
+#customerUpdate
+{
+    position:fixed;
     padding-right:10px;
     bottom:0px;
     right:0px;

@@ -13,10 +13,12 @@
                     <tr>
                         <td>Start Date</td>
                         <td><input id="startDate" type="text" onchange="dash.changedParam()"/></td>
+                        <td class="guide">YYYY-MM-DD</td>
                     </tr>
                     <tr>
                         <td>End Date</td>
                         <td><input id="endDate" type="text" onchange="dash.changedParam()"/></td>
+                        <td class="guide">YYYY-MM-DD</td>
                     </tr>
                     <tr>
                         <td>Options</td>
@@ -27,14 +29,17 @@
                                 <option>Page Views</option>
                             </select>
                         </td>
+                        <td class="guide"></td>
                     </tr>
                 </table>
             </div>
         </div>
     
         <div id="chartHolder"></div>
-
+        <div id="tableHolder"></div>
+        
     </div>
+    <div id="customerUpdate"></div>
     <!-- These JavaScript files will be created later on in the tutorial -->
     @Scripts.Render("~/scripts/json3.min.js")
     @Scripts.Render("~/scripts/getData.js")
@@ -42,7 +47,7 @@
     @Scripts.Render("~/scripts/auth_api_v3.js")
     @Scripts.Render("~/scripts/dashboard.js")
       
-    <div id="customerUpdate"></div>
+    
     <!-- Load the Client Library. Use the onload parameter to specify a callback function -->
     <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
     <button id="make-api-call-button" style="visibility: hidden">Get Sessions</button>

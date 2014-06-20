@@ -136,7 +136,7 @@ dash.dateValidation = function (datum) {
 dash.createBox = function (opts) {
     var box = document.createElement('div');
     box.style.width = opts.boxWidth;
-    box.style.height = opts.boxHeight;
+	if(opts.boxHeight){box.style.height = opts.boxHeight};
     box.style.borderWidth = opts.boxBorderWidth;
     box.style.borderColor = opts.boxBorderColor;
     box.style.borderStyle = opts.boxBorderStyle;
@@ -549,11 +549,14 @@ dash.createTable = function (data, params) {
     box.style.marginRight = "auto";
     box.style.overflowY = "scroll";
     box.style.textAlign = "center";
+
+    var tisch = dash.createTableHTML(data);
+    box.innerHTML = tisch.innerHTML;
+	//box.appendChild(tisch);
+
     var buttons = dash.createButtons(opts);
     box.appendChild(buttons);
 
-    var tisch = dash.createTableHTML(data);
-    box.appendChild(tisch);
 
     var placement = document.getElementById(opts.boxInside) || document.getElementsByTagName(opts.boxInside)[0];
     placement.innerHTML = "";
@@ -563,8 +566,9 @@ dash.createTable = function (data, params) {
 
 
 dash.createTableHTML = function (data) {
-    var tisch = document.createElement('table');
-    var cols = [];
+	var tisch = document.createElement('div');
+    var innerTisch = document.createElement('table');
+	var cols = [];
     if (data) {
         for (col in data[0]) {
             cols.push(col);
@@ -575,7 +579,7 @@ dash.createTableHTML = function (data) {
             col.innerHTML = cols[i].charAt(0).toUpperCase() + cols[i].substr(1).toLowerCase();
             row.appendChild(col);
         }
-        tisch.appendChild(row);
+        innerTisch.appendChild(row);
         for (i = 0; i < data.length; i++) {
             var row = document.createElement('tr')
             for (i2 = 0; i2 < cols.length; i2++) {
@@ -587,8 +591,9 @@ dash.createTableHTML = function (data) {
                 col.innerHTML = data[i][cols[i2]];
                 row.appendChild(col);
             }
-            tisch.appendChild(row);
+            innerTisch.appendChild(row);
         }
     }
+	tisch.appendChild(innerTisch);
     return tisch;
 }

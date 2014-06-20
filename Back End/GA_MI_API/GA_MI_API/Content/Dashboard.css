@@ -26,6 +26,7 @@
 #authorize-button
 {
     height:36px;
+	width:100px;
     top:2px;
     border-width:0;
     position:absolute;
@@ -72,6 +73,7 @@
 #controlsTitle
 {
     height:16px;
+	width:411px;
     font-size:14px;
     padding:0px 5px 5px 5px;
     color:white;
@@ -117,6 +119,8 @@
     cursor: pointer;
     font-weight:700;
 }
+
+
 #tableHolder
 {
     position:absolute;
@@ -124,13 +128,21 @@
     width:80%;
     left:10%;
     text-align:center;
+	min-height:100px;
 }
+
 #tableHolder table
 {
     position:absolute;
     top:35px;
     width:90%;
+	min-height:100px;
     left:5%;
+	z-index:1000;
+}
+#tableHolder tr
+{ 
+	height:10px;
 }
 #tableHolder th
 {
@@ -160,7 +172,6 @@
     padding-left:10px;
     text-align:left;
 }
-
 
 #customerUpdate
 {
