@@ -182,20 +182,6 @@
     <Compile Include="App_Start\FilterConfig.vb" />
     <Compile Include="App_Start\RouteConfig.vb" />
     <Compile Include="App_Start\WebApiConfig.vb" />
-    <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.vb" />
-    <Compile Include="Areas\HelpPage\App_Start\HelpPageConfig.vb" />
-    <Compile Include="Areas\HelpPage\Controllers\HelpController.vb" />
-    <Compile Include="Areas\HelpPage\HelpPageAreaRegistration.vb" />
-    <Compile Include="Areas\HelpPage\HelpPageConfigurationExtensions.vb" />
-    <Compile Include="Areas\HelpPage\Models\HelpPageApiModel.vb" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleGenerator.vb" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleKey.vb" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\ImageSample.vb" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\InvalidSample.vb" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\ObjectGenerator.vb" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.vb" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.vb" />
-    <Compile Include="Areas\HelpPage\XmlDocumentationProvider.vb" />
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -227,18 +213,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Areas\HelpPage\HelpPage.css" />
-    <Content Include="Areas\HelpPage\Views\Web.config" />
-    <Content Include="Areas\HelpPage\Views\Shared\_Layout.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\Index.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TextSample.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Samples.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Parameters.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\InvalidSample.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ImageSample.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\HelpPageApiModel.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.vbhtml" />
-    <Content Include="Areas\HelpPage\Views\Help\Api.vbhtml" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -322,21 +296,7 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Areas\HelpPage\Views\_ViewStart.vbhtml" />
     <Content Include="Content\Site.css" />
-    <Content Include="Images\accent.png" />
-    <Content Include="Images\bullet.png" />
-    <Content Include="Images\heroAccent.png" />
-    <Content Include="Images\orderedList0.png" />
-    <Content Include="Images\orderedList1.png" />
-    <Content Include="Images\orderedList2.png" />
-    <Content Include="Images\orderedList3.png" />
-    <Content Include="Images\orderedList4.png" />
-    <Content Include="Images\orderedList5.png" />
-    <Content Include="Images\orderedList6.png" />
-    <Content Include="Images\orderedList7.png" />
-    <Content Include="Images\orderedList8.png" />
-    <Content Include="Images\orderedList9.png" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.vbhtml" />
     <Content Include="Views\Home\Index.vbhtml" />
