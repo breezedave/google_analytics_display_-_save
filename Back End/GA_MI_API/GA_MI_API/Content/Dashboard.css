@@ -42,7 +42,6 @@
 #reportBody
 {
     width:100%;
-    min-height:600px;
     background-color:#FAFAFA;
     position:relative;
 }
@@ -121,18 +120,30 @@
 #tableHolder
 {
     position:absolute;
-    top:600px;
-    width:90%;
-    left:5%;
-    min-height:100px;
-    background-color:#FF0000;
-
+    top:450px;
+    width:80%;
+    left:10%;
+    text-align:center;
+}
+#tableHolder table
+{
+    position:absolute;
+    top:30px;
+    width:100%;
+}
+#tableHolder th
+{
+    text-align:center;
+}
+#tableHolder td
+{
+    font-size:10px;
 }
 
 
 #customerUpdate
 {
-    position:absolute;
+    position:fixed;
     padding-right:10px;
     bottom:0px;
     right:0px;

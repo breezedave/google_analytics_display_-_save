@@ -43,6 +43,7 @@ dash.changedParam = function () {
     }
     if (dash.dateValidation(dash.startDate) && dash.dateValidation(dash.endDate) && dash.toRealDate(dash.endDate) >= dash.toRealDate(dash.startDate)) {
         dash.newQuery("chartHolder", dash.period);
+        dash.tableQuery("tableHolder", dash.period);
     }
     
 }
@@ -71,6 +72,33 @@ dash.loadResults = function (results) {
     }
     var params = { boxInside: dash.boxInside };
     dash.createColChart(records, params);
+}
+
+dash.loadResultsTable = function (results) {
+    if (!results.error) {
+        if (results.rows && results.rows.length) {
+            var records = [];
+            for (var i = 0; i < results.rows.length; i++) {
+                var row = {};
+                for (var i2 = 0; i2 < results.rows[i].length; i2++) {
+                    if (results.columnHeaders[i2].name == 'ga:year') { var year = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:month') { var month = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:day') { var day = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:hour') { var hour = results.rows[i][i2] };
+                    row.date = new Date(year || 0, month - 1 || 0, day || 1, hour || 0, 0, 0, 0);
+                    if (results.columnHeaders[i2].name == 'ga:pagepath') { row.pagepath = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:sessions') { row.sessions = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:users') { row.users = results.rows[i][i2] };
+                    if (results.columnHeaders[i2].name == 'ga:pageviews') { row.pageviews = results.rows[i][i2] };
+                }
+                records.push(row);
+            }
+        } else {
+            //console.log('No results found');
+        }
+    }
+    var params = { boxInside: dash.tableBoxInside };
+    dash.createTable(records,params);
 }
 
 dash.toRealDate = function (datum) {
@@ -133,7 +161,12 @@ dash.createButtons = function (opts) {
     yearly.style.marginRight = "-1px";
     yearly.className = "button"
     yearly.innerHTML = "Yearly";
-    yearly.onclick = function () { dash.newQuery(opts.boxInside, "yearly") }
+    if (opts.type == "chart") {
+        yearly.onclick = function () { dash.newQuery(opts.boxInside, "yearly") }
+    }
+    if (opts.type == "table") {
+        yearly.onclick = function () {dash.tableQuery(opts.boxInside, "yearly")}
+    }
     buttonHolder.appendChild(yearly);
 
     var monthly = document.createElement('div');
@@ -147,7 +180,12 @@ dash.createButtons = function (opts) {
     monthly.style.marginRight = "-1px";
     monthly.className = "button"
     monthly.innerHTML = "Monthly";
-    monthly.onclick = function () { dash.newQuery(opts.boxInside, "monthly") }
+    if (opts.type == "chart") {
+        monthly.onclick = function () { dash.newQuery(opts.boxInside, "monthly") }
+    }
+    if (opts.type == "table") {
+        monthly.onclick = function () {dash.tableQuery(opts.boxInside, "monthly")}
+    }
     buttonHolder.appendChild(monthly);
 
 
@@ -162,7 +200,12 @@ dash.createButtons = function (opts) {
     daily.style.marginRight = "-1px";
     daily.className = "button"
     daily.innerHTML = "Daily";
-    daily.onclick = function () { dash.newQuery(opts.boxInside, "daily") }
+    if (opts.type == "chart") {
+        daily.onclick = function () { dash.newQuery(opts.boxInside, "daily") }
+    }
+    if (opts.type == "table") {
+        daily.onclick = function () {dash.tableQuery(opts.boxInside, "daily")}
+    }
     buttonHolder.appendChild(daily);
 
 
@@ -177,7 +220,12 @@ dash.createButtons = function (opts) {
     hourly.style.marginRight = "-1px";
     hourly.className = "button"
     hourly.innerHTML = "Hourly";
-    hourly.onclick = function () { dash.newQuery(opts.boxInside, "hourly") }
+    if (opts.type == "chart") {
+        hourly.onclick = function () { dash.newQuery(opts.boxInside, "hourly") }
+    }
+    if (opts.type == "table") {
+        hourly.onclick = function () {dash.tableQuery(opts.boxInside, "hourly")}
+    }
     buttonHolder.appendChild(hourly);
 
     return buttonHolder;
@@ -301,9 +349,30 @@ dash.newQuery = function (position, period) {
     dash.pullFromGoogle(position, query);
 }
 
+dash.tableQuery = function (position, period) {
+    var query = {}
+    query.ids = "ga:" + getData.profile;
+    query["start-date"] = dash.startDate;
+    query["end-date"] = dash.endDate;
+    query.metrics = dash.metric;
+    if (period == "hourly") { query.dimensions = "ga:year,ga:month,ga:day,ga:hour" }
+    if (period == "daily") { query.dimensions = "ga:year,ga:month,ga:day" }
+    if (period == "monthly") { query.dimensions = "ga:year,ga:month" }
+    if (period == "yearly") { query.dimensions = "ga:year" }
+    if (query.metrics == "ga:pageviews") { query.dimensions += ",ga:pagepath" }
+    dash.tablePeriod = period;
+    dash.pullFromGoogleTable(position, query);
+}
+
+
 dash.pullFromGoogle = function (position, query) {
     dash.boxInside = position;
     gapi.client.analytics.data.ga.get(query).execute(dash.loadResults);
+}
+
+dash.pullFromGoogleTable = function (position, query) {
+    dash.tableBoxInside = position;
+    gapi.client.analytics.data.ga.get(query).execute(dash.loadResultsTable);
 }
 
 dash.getDataDetail = function (data) {
@@ -339,7 +408,8 @@ dash.getDataDetail = function (data) {
 dash.createColChart = function (data, params) {
     var detail = dash.getDataDetail(data);
     var opts = {
-        boxHeight: "400px"
+        type:"chart"
+        , boxHeight: "400px"
         , boxWidth: "800px"
         , boxBorderWidth: "2px"
         , boxBorderColor: "#BABABA"
@@ -444,3 +514,73 @@ dash.cleanDate = function (datum, period) {
 }
 
 
+dash.createTable = function (data, params) {
+    var opts = {
+        type: "table"
+        , boxWidth: "900px"
+        , boxMinHeight: "400px"
+        , boxBorderWidth: "2px"
+        , boxBorderColor: "#BABABA"
+        , boxBorderStyle: "Solid"
+        , boxBackgroundColor: "#CBDEDE"
+        , boxInside: "tableHolder"
+        , axisPadding: 40
+        , buttonWidth: "60px"
+        , buttonHeight: "23px"
+        , buttonColor: "#CDCDCD"
+        , buttonBorderColor: "#888888"
+    }
+
+    for (opt in opts) {
+        for (param in params) {
+            if (param == opt) { opts[opt] = params[param] }
+        }
+
+    }
+
+    var box = dash.createBox(opts);
+    box.style.minHeight = opts.boxMinHeight;
+    box.style.marginLeft = "auto";
+    box.style.marginRight = "auto";
+    box.style.overflowY = "scroll";
+    var buttons = dash.createButtons(opts);
+    box.appendChild(buttons);
+
+    var tisch = dash.createTableHTML(data);
+    box.appendChild(tisch);
+
+    var placement = document.getElementById(opts.boxInside) || document.getElementsByTagName(opts.boxInside)[0];
+    placement.innerHTML = "";
+    placement.appendChild(box);
+
+}
+
+
+dash.createTableHTML = function (data) {
+    var tisch = document.createElement('table');
+    var cols = [];
+    for (col in data[0]) {
+        cols.push(col);
+    }
+    var row = document.createElement('tr')
+    for (i = 0; i < cols.length; i++) {
+        var col = document.createElement('th')
+        col.innerHTML = cols[i];
+        row.appendChild(col);
+    }
+    tisch.appendChild(row);
+    for (i = 0; i < data.length; i++) {
+        var row = document.createElement('tr')
+        for (i2 = 0; i2 < cols.length; i2++) {
+            var col = document.createElement('td');
+            if (cols[i2] == "date") {
+                data[i].date = dash.cleanDate(data[i].date,dash.tablePeriod);
+            }
+            if (data[i][cols[i2]].length > 60) { data[i][cols[i2]] = data[i][cols[i2]].substr(0, 57) + "..."; }
+            col.innerHTML = data[i][cols[i2]];
+            row.appendChild(col);
+        }
+        tisch.appendChild(row);
+    }
+    return tisch;
+}

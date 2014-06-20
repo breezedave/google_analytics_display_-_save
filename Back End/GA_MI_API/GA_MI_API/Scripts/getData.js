@@ -38,6 +38,7 @@ getData.isReady = function () {
             getData.progress++;
             document.getElementById('myControls').style.display = "";
             dash.newQuery("chartHolder", "monthly");
+            dash.tableQuery("tableHolder", "monthly");
         }
     }
     if (getData.progress == 1) {
